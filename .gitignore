@@ -3,7 +3,12 @@ index/
 DNAmapped/
 .snakemake/
 gff/
-
+RNAmapped/
+bamqc/
+gff/
+logs/
+DNAmapped/
+STARindex/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
