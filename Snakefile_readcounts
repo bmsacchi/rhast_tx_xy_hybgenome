@@ -1,0 +1,42 @@
+samples = ['TxF6f6', 'TxF6m23']
+
+rule all:
+    input: 
+        rna=expand("readCounts/{sample}_rna_counts.txt", sample = samples),
+        dna=expand("readCounts/{sample}_dna_counts.txt", sample = samples),
+        gtf ="gff/merged_TX_combined.gtf"
+rule feature_counts_rna:
+     input:
+        rna="RNAmapped/{sample}Aligned.sortedByCoord.out.bam",
+        gtf="gff/merged_TX_combined.gff"
+     output:
+        "readCounts/{sample}_rna_counts.txt"
+     params:
+         feature = "exon",
+         attr = "gene"
+     resources:
+     threads:
+           8
+     shell:
+         """
+         featureCounts -T {threads} -t {params.feature} -g {params.attr} -a {input.gtf} -o {output} {input.rna}
+
+         """
+
+rule feature_counts_dna:
+     input:
+        dna="DNAmapped/{sample}_merged_sorted_dupsMarked.bam",
+        gtf="gff/merged_TX_combined.gtf"
+     output:
+         "readCounts/{sample}_dna_counts.txt"
+     params:
+         feature = "exon",
+         attr = "gene"
+     resources:
+     threads:
+           8
+     shell:
+         """
+         featureCounts -T {threads} -t {params.feature} -g {params.attr} -a {input.gtf} -o {output} {input.dna}
+         """
+          
