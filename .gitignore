@@ -4,9 +4,9 @@ DNAmapped/
 .snakemake/
 gff/*.gff
 gff/*.db
+gff/*.gtf
 RNAmapped/
 bamqc/
-gff/
 logs/
 DNAmapped/
 STARindex/
