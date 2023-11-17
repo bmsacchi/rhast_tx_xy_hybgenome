@@ -2,7 +2,8 @@
 index/
 DNAmapped/
 .snakemake/
-gff/
+gff/*.gff
+gff/*.db
 RNAmapped/
 bamqc/
 gff/
