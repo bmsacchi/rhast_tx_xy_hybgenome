@@ -13,7 +13,6 @@ DNAmapped/
 STARindex/
 bamqc
 gff/*.saf
-readCounts/
 test.out
 test.out.summary
 *.css
