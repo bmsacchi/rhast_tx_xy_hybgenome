@@ -7,9 +7,15 @@ gff/*.db
 gff/*.gtf
 RNAmapped/
 bamqc/
+bamqc/Tx*/
 logs/
 DNAmapped/
 STARindex/
+bamqc
+gff/*.saf
+readCounts/
+test.out
+test.out.summary
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
