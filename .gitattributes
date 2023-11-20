@@ -1,0 +1,3 @@
+*snakefile* linguist-language=Python
+*.html linguist-documentation
+*.Rmd  linguist-detectable
