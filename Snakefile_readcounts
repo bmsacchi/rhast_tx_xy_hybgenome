@@ -1,67 +1,53 @@
 samples = ['TxF6f6', 'TxF6m23']
 
+
 rule all:
     input: 
         rna=expand("readCounts/{sample}_rna_counts.out", sample = samples),
-        #dna=expand("readCounts/{sample}_dna_counts.txt", sample = samples),
-        saf="gff/genes.saf"
-
-rule generate_saf_file:
-    input:
-        gff = "gff/merged_TX_combined.gff"
-    output:
-        "gff/genes.saf"
-    run:
-        with open(output) as fout:
-            with open(input) as fin:
-                fout.write("GeneID\tChr\tStart\tEnd\tStrand\n")
-                lines = fin.readlines()
-                for l in lines:
-                    if not l.startswith("#"):
-                        sl = l.strip().split("\t")
-                        feat = sl[2]
-                        if feat == "gene":
-                            chr = sl[0]
-                            start = sl[3]
-                            end = sl[4]
-                            strand = sl[6]
-                            id = re.search("NChap2_final\d+", sl[8])[0]
-                            fout.write(f"{id}\t{chr}\t{start}\t{end}\t{strand}\n")
-
-
+        dna=expand("readCounts/{sample}_dna_counts.out", sample = samples),
+        saf="gff/merged_TX_combined.saf"
 
 rule feature_counts_rna:
      input:
         rna="RNAmapped/{sample}Aligned.sortedByCoord.out.bam",
-        gtf="gff/merged_TX_combined.gtf"
+        saf="gff/merged_TX_combined.saf"
      output:
         "readCounts/{sample}_rna_counts.out"
-     params:
-         feature = "gene",
-         attr = "gene_id"
+     log: "readCounts/logs/{sample}_rna_feature_counts.log"
      resources:
      threads:
            8
      shell:
          """
-         featureCounts -T {threads} -p --countReadPairs -a {input.gtf} -o {output} {input.rna}
-
+         featureCounts -T {threads} \
+                       -p \
+                       -t gene \
+                       -a {input.saf} \
+                       -F SAF \
+                       -o {output} \
+                       -Q 30 \
+                       {input.rna} 2> {log}
          """
 
-#rule feature_counts_dna:
-#     input:
-#        dna="DNAmapped/{sample}_merged_sorted_dupsMarked.bam",
-#        gtf="gff/merged_TX_combined.gtf"
-#     output:
-#         "readCounts/{sample}_dna_counts.txt"
-#     params:
-#         feature = "exon",
-#         attr = "gene"
-#     resources:
-#     threads:
-#           8
-#     shell:
-#         """
-#         featureCounts -T {threads} -t {params.feature} -g {params.attr} -a {input.gtf} -o {output} {input.dna}
-#         """
-          
+rule feature_counts_dna:
+     input:
+        dna="DNAmapped/{sample}_merged_sorted_dupsMarked.bam",
+        saf="gff/merged_TX_combined.saf"
+     output:
+        "readCounts/{sample}_dna_counts.out"
+     log: "readCounts/logs/{sample}_dna_feature_counts.log"
+     resources:
+     threads:
+           8
+     shell:
+         """
+         featureCounts -T {threads} \
+                       -p \
+                       -t gene \
+                       -a {input.saf} \
+                       -F SAF \
+                       -o {output} \
+                       -Q 30 \
+                       {input.dna} 2> {log}
+         """
+
